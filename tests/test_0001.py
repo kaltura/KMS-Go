@@ -2,8 +2,8 @@ import time, os, sys
 
 import pytest
 
-from android.screens.home import Home
-from android.screens.login import Login
+from screens.home import Home
+from screens.login import Login
 from lib import logger
 from lib.test_service import TestService
 
@@ -40,8 +40,8 @@ class Test:
             self.startTime = time.time()
             logger.info('Test Flow Start')
             # Tested Screens
-            home = Home(driver) 
-            login = Login(driver)
+            home = Home(platform, driver) 
+            login = Login(platform, driver)
             
             # Steps:
             home.click_user_image_view()
