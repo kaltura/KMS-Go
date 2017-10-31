@@ -8,8 +8,6 @@ APPIUM_LOCAL_HOST_URL = 'http://localhost:4723/wd/hub'
 PLATFORM_VERSION = '6.0.1'
 
 class TestService:
-
-
     #update the supported platforms for each test case by reading the supported browsers we pass to the fixture from platform_matrix.csv. 1 - support , 0 - not support.  
     def updatePlatforms(self,test_num):
         

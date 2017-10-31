@@ -1,6 +1,9 @@
-from screens.base import Base
-from ios.screens.home_ios import HomeIos
+import sys
 from android.screens.home_android import HomeAndroid
+from ios.screens.home_ios import HomeIos
+from lib import logger
+from screens.base import Base
+
 
 class Home(Base):
     # Parameters
@@ -31,6 +34,11 @@ class Home(Base):
     ############################# Type text methods ######################       
     # Click (tap) methods   
     def click_user_image_view(self):
-        self.click(self.home.user_image_view)
+        if self.click(self.home.user_image_view) == True:
+            logger.debug('Function: "' + sys._getframe().f_code.co_name + '" - Clicked on user image view button')
+            return True
+        else:
+            logger.warning('Function: "' + sys._getframe().f_code.co_name + '" - Failed to click on user image view button')
+            return False        
         
         
