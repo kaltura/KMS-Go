@@ -1,6 +1,6 @@
 import logging, sys, time, os
-
-logging.basicConfig(filename='C:\work\Mobile\KmsGo\workspace\KmsGo\log\log.txt', 
+#TODO hardcoded
+logging.basicConfig(filename='C:\work\Mobile\KmsGo\workspace\KMS-Go\log\log.txt', 
                     format='%(levelname)s %(asctime)s %(message)s', 
                     datefmt='%m/%d/%Y %I:%M:%S %p: ', 
                     filemode='w', 
@@ -11,7 +11,13 @@ def info(content):
     mylogger.info(content)
 
 def warning(content):
-    logging.warning(content)
+    mylogger.info('WARNING: ' + content)
+    
+def error(content):
+    mylogger.info('ERROR: ' + content)
+    
+def debug(content):
+    mylogger.info('DEBUG: ' + content)     
     
 #=============================================================================================================================
 # the function writes to the log that we started the test

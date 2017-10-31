@@ -1,7 +1,8 @@
+import sys
 from time import sleep
-
 from appium.webdriver.common.touch_action import TouchAction
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from lib import logger
 
 
 class Screen:
@@ -20,15 +21,19 @@ class Screen:
 
         method = locator[0]
         values = locator[1]
-
+        
         if type(values) is str:
-            return self.get_element_by_type(method, values)
+            try:
+                return self.get_element_by_type(method, values)
+            except NoSuchElementException:
+                raise NoSuchElementException
         elif type(values) is list:
             for value in values:
                 try:
                     return self.get_element_by_type(method, value)
                 except NoSuchElementException:
                     pass
+            logger.warning('Function: ' + sys._getframe().f_code.co_name + ': Element not found by: "' + method + '" = "' + values + '"')
             raise NoSuchElementException
 
     def get_element_by_type(self, method, value):
@@ -47,6 +52,7 @@ class Screen:
         elif method == 'name':
             return self.driver.find_element_by_name(value)
         else:
+            logger.warning('Function: ' + sys._getframe().f_code.co_name + ': Invalid locator method: "' + method + '" = "' + value + '"')
             raise Exception('Invalid locator method.')
 
     def get_elements(self, locator):
@@ -86,16 +92,18 @@ class Screen:
         elif method == 'name':
             return self.driver.find_elements_by_name(value)
         else:
+            logger.warning('Function: ' + sys._getframe().f_code.co_name + ': Element not found by: "' + method + '" = "' + value + '"')
             raise Exception('Invalid locator method.')
 
     # element visible
     def is_visible(self, locator):
-        try:
-            self.get_element(locator).is_displayed()
-            return True
-        except NoSuchElementException:
-            return False
-
+        self.get_element(locator).is_displayed()
+#         try:
+#             self.get_element(locator).is_displayed()
+#             return True
+#         except NoSuchElementException:
+#             return False
+        
     # element present
     def is_present(self, locator):
         try:
@@ -114,7 +122,7 @@ class Screen:
             except NoSuchElementException:
                 sleep(1)
                 i += 1
-        raise Exception('Element never became visible: %s (%s)' % (locator[0], locator[1]))
+        return None
 
     def wait_for_text(self, locator, text, timeout=10):
         i = 0
@@ -130,23 +138,38 @@ class Screen:
                 pass
             sleep(1)
             i += 1
-        raise Exception('Element text never became visible: %s (%s) - %s' % (locator[0], locator[1], text))
+        return None
 
     # clicks and taps
     def click(self, locator):
         element = self.wait_visible(locator)
-        element.click()
+        if element == None:
+            return False
+        else:
+            element.click()
+            return True
+            
         
     # click with offset
     def click_with_offset(self, locator, x, y):
         element = self.wait_visible(locator)
-        action = TouchAction(self.driver)
-        action.tap(element, x, y).perform()
+        if element == None:
+            return False
+        else:
+            action = TouchAction(self.driver)
+            action.tap(element, x, y).perform()
+            return True         
+
         
     # send keys
     def send_keys(self, locator, text):
         element = self.wait_visible(locator)
-        element.send_keys(text)
+        if element == None:
+            return False
+        else:
+            element.send_keys(text)
+            return True 
+        
 
     # gestures
     def swipe_to_element(self, scrollable_element_locator, target_element_locator, direction, duration=None):

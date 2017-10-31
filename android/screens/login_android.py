@@ -2,7 +2,6 @@ from appium import webdriver
 from android.screens.base_android import BaseAndroid
 
 
-
 class LoginAndroid(BaseAndroid):
     login_button = ('id', 'com.kms.kaltura.kmsapplication:id/login_button')
     text_login_username = ('id', 'Login-username')

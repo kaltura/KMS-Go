@@ -1,6 +1,9 @@
-from screens.base import Base
-from ios.screens.pre_login_ios import PreLoginIos
+import sys
 from android.screens.pre_login_android import PreLoginAndroid
+from ios.screens.pre_login_ios import PreLoginIos
+from lib import logger
+from screens.base import Base
+
 
 class PreLogin(Base):
     # Parameters
@@ -26,7 +29,17 @@ class PreLogin(Base):
     #############################################################################
     ############################# Click (tap) methods ###########################              
     def click_enter_url_of_your_site(self):
-        self.click(self.preLogin.enter_url_of_your_site)
+        if self.click(self.preLogin.enter_url_of_your_site) == True:
+            logger.debug('Function: "' + sys._getframe().f_code.co_name + '" - Clicked on enter_url_of_your_site button')
+            return True
+        else:
+            logger.warning('Function: "' + sys._getframe().f_code.co_name + '" - Failed to click on enter_url_of_your_site button')
+            return False      
         
-    def type_url_edit_text(self):
-        self.send_keys(self.preLogin.url_edit_text, '1722461-2.qakmstest.dev.kaltura.com\n')
+    def type_url_edit_text(self, text):
+        if self.send_keys(self.preLogin.url_edit_text, text)  == True:
+            logger.debug('Function: "' + sys._getframe().f_code.co_name + '" - Type in login url_edit filed: "' + text + '"')
+            return True
+        else:
+            logger.warning('Function: "' + sys._getframe().f_code.co_name + '" - Failed to type in login url_edit filed: "' + text + '"')
+            return False         
