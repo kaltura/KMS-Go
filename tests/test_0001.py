@@ -43,9 +43,6 @@ class Test:
         try:
             # Capture test start time
             self.testService.logTestStartTime()
-            logger.infoLog("Test started at: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(self.testService.CURRENT_TEST_START_TIME)))
-            
-            logger.infoLog('Test Flow Started')
             # Tested Screens
             login = Login(TestService.CURRENT_PLATFORM , driver)
             
