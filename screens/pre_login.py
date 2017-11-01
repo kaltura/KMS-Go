@@ -30,16 +30,16 @@ class PreLogin(Base):
     ############################# Click (tap) methods ###########################              
     def click_enter_url_of_your_site(self):
         if self.click(self.preLogin.enter_url_of_your_site) == True:
-            logger.debug('Function: "' + sys._getframe().f_code.co_name + '" - Clicked on enter_url_of_your_site button')
+            logger.debugLog('Function: "' + sys._getframe().f_code.co_name + '" - Clicked on enter_url_of_your_site button')
             return True
         else:
-            logger.warning('Function: "' + sys._getframe().f_code.co_name + '" - Failed to click on enter_url_of_your_site button')
+            logger.warningLog('Function: "' + sys._getframe().f_code.co_name + '" - Failed to click on enter_url_of_your_site button')
             return False      
         
     def type_url_edit_text(self, text):
         if self.send_keys(self.preLogin.url_edit_text, text)  == True:
-            logger.debug('Function: "' + sys._getframe().f_code.co_name + '" - Type in login url_edit filed: "' + text + '"')
+            logger.debugLog('Function: "' + sys._getframe().f_code.co_name + '" - Type in login url_edit filed: "' + text + '"')
             return True
         else:
-            logger.warning('Function: "' + sys._getframe().f_code.co_name + '" - Failed to type in login url_edit filed: "' + text + '"')
+            logger.warningLog('Function: "' + sys._getframe().f_code.co_name + '" - Failed to type in login url_edit filed: "' + text + '"')
             return False         

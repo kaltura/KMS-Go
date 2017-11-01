@@ -33,7 +33,7 @@ class Screen:
                     return self.get_element_by_type(method, value)
                 except NoSuchElementException:
                     pass
-            logger.warning('Function: ' + sys._getframe().f_code.co_name + ': Element not found by: "' + method + '" = "' + values + '"')
+            logger.warningLog('Function: ' + sys._getframe().f_code.co_name + ': Element not found by: "' + method + '" = "' + values + '"')
             raise NoSuchElementException
 
     def get_element_by_type(self, method, value):
@@ -52,7 +52,7 @@ class Screen:
         elif method == 'name':
             return self.driver.find_element_by_name(value)
         else:
-            logger.warning('Function: ' + sys._getframe().f_code.co_name + ': Invalid locator method: "' + method + '" = "' + value + '"')
+            logger.warningLog('Function: ' + sys._getframe().f_code.co_name + ': Invalid locator method: "' + method + '" = "' + value + '"')
             raise Exception('Invalid locator method.')
 
     def get_elements(self, locator):
@@ -92,7 +92,7 @@ class Screen:
         elif method == 'name':
             return self.driver.find_elements_by_name(value)
         else:
-            logger.warning('Function: ' + sys._getframe().f_code.co_name + ': Element not found by: "' + method + '" = "' + value + '"')
+            logger.warningLog('Function: ' + sys._getframe().f_code.co_name + ': Element not found by: "' + method + '" = "' + value + '"')
             raise Exception('Invalid locator method.')
 
     # element visible

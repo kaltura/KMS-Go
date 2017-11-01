@@ -35,10 +35,10 @@ class Home(Base):
     # Click (tap) methods   
     def click_user_image_view(self):
         if self.click(self.home.user_image_view) == True:
-            logger.debug('Function: "' + sys._getframe().f_code.co_name + '" - Clicked on user image view button')
+            logger.debugLog('Function: "' + sys._getframe().f_code.co_name + '" - Clicked on user image view button')
             return True
         else:
-            logger.warning('Function: "' + sys._getframe().f_code.co_name + '" - Failed to click on user image view button')
+            logger.warningLog('Function: "' + sys._getframe().f_code.co_name + '" - Failed to click on user image view button')
             return False        
         
         
