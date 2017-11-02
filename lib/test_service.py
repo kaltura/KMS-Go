@@ -1,10 +1,9 @@
-import pytest, csv, os, time
-from datetime import datetime
-from os.path import sys
 from appium import webdriver
+from datetime import datetime
+import pytest, csv, sys, os, time
+
 from lib import logger
-
-
+import conftest
 
 #===========================================================================
 # The class contains basic test functions and macros. 
@@ -15,6 +14,8 @@ class TestService:
     # General parameters
     CURRENT_PLATFORM                = None
     # Logging parameters
+#     LOG_LEVEL                       = "DEBUG" #TODO Enum
+    LOG_LEVEL                       = "INFO" #TODO Enum
     GLOBAL_LOG_FILE_PATH            = None
     TEST_LOG_FILE_FOLDER_PATH       = None
     TEST_LOG_FILE_PATH              = None
@@ -31,6 +32,45 @@ class TestService:
     
     # IOS parameters
     
+    # PractiTest parameters
+    PRACTITEST_PROJECT_ID                  = 1328
+    PRACTITEST_AUTOMATED_SESSION_FILTER_ID = 259788
+    PRACTITEST_API_TOKEN                   = "deee12e1d8746561e1815d0430814c82c9dbb57d"
+    PRACTITEST_DEVELOPER_EMAIL             = "oleg.sigalov@kaltura.com"
+    
+    ## MTHODS
+    def basicSetup(self, platform, testNum):
+        try:
+            # Initialize log, create log folder if needed
+            logger.initializeLog(testNum)
+            # Capture test start time
+            self.logTestStartTime()
+            # Return WebDriver (android/ios)
+            driver = self.getDriver(platform)
+            # Create log
+            logger.readyForTestLog(testNum,
+                                driver.capabilities['platformName'],
+                                driver.capabilities['platformVersion'],
+                                driver.capabilities['deviceModel'],
+                                driver.capabilities['deviceScreenSize'])
+            return driver
+        except Exception:
+            logger.infoLog('Test setup failed - Failed to get Driver')
+            raise
+    def basicTearDown(self, test, driver=None):
+        logger.infoLog('Going to TearDown')
+        if driver != None:
+            # Take last screenshot before quitting
+            driver.save_screenshot(conftest.LSAT_SCREENSHOT_PATH)    
+            driver.quit()
+            #write to log we finished the test
+        self.logTestEndTime()
+
+        if test.status == "Pass":
+            logger.infoLog('TEST PASSED')
+        else:
+            logger.infoLog('TEST FAILED')
+            assert(False)        
     
     #update the supported platforms for each test case by reading the supported browsers we pass to the fixture from platform_matrix.csv. 1 - support , 0 - not support.  
     def updatePlatforms(self,test_num):
@@ -48,7 +88,7 @@ class TestService:
             for row in platform_matrix:
                 if (row['case'] == case_str):
                     if (row['android']=='1'):
-                        supported_platforms.append(pytest.mark.ff('android'))
+                        supported_platforms.append(pytest.mark.ff(['android', row['pt_id']]))
                     if (row['ios']=='1'):
                         supported_platforms.append(pytest.mark.ch('ios'))    
     
@@ -56,7 +96,7 @@ class TestService:
     
     
     #TODO
-    def setup(self, platform):
+    def getDriver(self, platform):
         if platform == 'android':
             return self.driver_setup_android()
         elif platform == 'ios':
@@ -82,26 +122,25 @@ class TestService:
         return None
     
     # The function handles exception inst, mark the test as fail and writes the error in the log 
-    def handleException(self,test,inst,startTime):
-        
-        logger.log_exception(inst)
-        
+    def handleException(self, test, exp):
+        logger.log_exception(exp)
         test.status = "Fail"
         return test.status    
     
     # Get the test start time and print to log
     def logTestStartTime(self):
         self.CURRENT_TEST_START_TIME = time.time()
-        logger.infoLog("Test started at: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(self.CURRENT_TEST_START_TIME)))
+        logger.infoLog('************************************************************************************************************************')
+        logger.infoLog("Test Started At: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(self.CURRENT_TEST_START_TIME)))
             
     
     # Get the test end time and print to log        
     def logTestEndTime(self):
         self.CURRENT_TEST_END_TIME = time.time()
-        logger.infoLog("Test ended at: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(self.CURRENT_TEST_END_TIME)))
+        logger.infoLog("Test Ended At: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(self.CURRENT_TEST_END_TIME)))
         timeDiff = self.CURRENT_TEST_END_TIME - self.CURRENT_TEST_START_TIME 
         timeDiff = datetime.utcfromtimestamp(timeDiff).strftime('%H:%M:%S.%f')[:-3]
-        logger.infoLog("Total test run: " + timeDiff)         
+        logger.infoLog("Total Test Run: " + timeDiff)         
         
         
         
