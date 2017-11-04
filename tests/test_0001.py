@@ -36,8 +36,6 @@ class Test:
             # Steps:
             logger.infoLog('STEP1: Goint to login')
             login.login_with_credentials('admin', '123456')
-            print('1')
-            print('2')
             self.status = "Pass"
         # If an exception happened we need to handle it and fail the test       
         except Exception as exp:

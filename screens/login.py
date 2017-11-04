@@ -3,7 +3,6 @@ import sys
 from android.screens.login_android import LoginAndroid
 from ios.screens.login_ios import LoginIos
 from lib import logger
-from lib.test_service import TestService
 from screens.base import Base
 from screens.general import General
 from screens.home import Home
