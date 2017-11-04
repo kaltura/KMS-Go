@@ -109,11 +109,11 @@ def log_exception(inst):
                             }
     
     
-    debugLog("Exception at file     : " + traceback_details["filename"])
-    debugLog("Exception at line     : " + str(traceback_details["lineno"]))
+    infoGlobalLog("Exception at file     : " + traceback_details["filename"])
+    infoGlobalLog("Exception at line     : " + str(traceback_details["lineno"]))
     #debugLog("Exception at function : " + traceback_details["name"])
     #debugLog("Exception type        : " + traceback_details["type"])
-    debugLog("Value                 : " + str(exc_value))
+    infoGlobalLog("Value                 : " + str(exc_value))
     
 # Initialize log - Create global log file in not exists, and creates log in current test folder
 def initializeLog(testNum=None):

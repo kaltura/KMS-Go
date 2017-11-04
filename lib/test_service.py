@@ -1,13 +1,12 @@
 from datetime import datetime
-import inspect
 
 from appium import webdriver
 import pytest, csv, sys, os, time
-
-import conftest
 from lib import logger
+from lib.practitest import PractiTest
 
 
+# from lib.practitest import PractiTest
 #===========================================================================
 # The class contains basic test functions and macros. 
 # Driver and logs initialization, timeout handlers. 
@@ -35,18 +34,17 @@ class TestService:
     PLATFORM_VERSION                = '6.0.1'
     
     # IOS parameters
+
     
-    # PractiTest parameters
-    PRACTITEST_PROJECT_ID                  = 1328
-    PRACTITEST_AUTOMATED_SESSION_FILTER_ID = 259788
-    PRACTITEST_API_TOKEN                   = "deee12e1d8746561e1815d0430814c82c9dbb57d"
-    PRACTITEST_DEVELOPER_EMAIL             = "oleg.sigalov@kaltura.com"
+    # Test Module
+    practiTest = PractiTest()
     
     ## MTHODS
     def basicSetup(self, platform, testNum):
         try:
             # Initialize log, create log folder if needed
             logger.initializeLog(testNum)
+            self.practiTest.updateTestLogFileFolder(TestService.TEST_LOG_FILE_FOLDER_PATH)
             # Capture test start time
             self.logTestStartTime(testNum)
             # Return WebDriver (android/ios)
@@ -67,15 +65,17 @@ class TestService:
             if driver != None:
                 # Take last screenshot before quitting
                 logger.takeScreeshotGeneric(driver, 'LAST_SCREENSHOT')
-#                 driver.save_screenshot(TestService.SCREENSHOT_PATH)    
                 driver.quit()
                 #write to log we finished the test
             self.logTestEndTime()
         except Exception as exp:
-            test.status = self.handleException(self, exp)                   
+            test.status = self.handleException(self, exp) 
+         
+        # THE NEXT LINE IS FOR DEBUG 
+#         self.practiTest.setPractitestInstanceTestResults(test.status, str(test.testNum))                     
         if (self.isAutomationEnv() == True):
-            pass
-#             practiTest.setPractitestInstanceTestResults(test.status,str(test.testNum))
+            self.practiTest.setPractitestInstanceTestResults(test.status, str(test.testNum))
+        
         if test.status == "Pass":
             logger.infoLog('TEST PASSED')
         else:
