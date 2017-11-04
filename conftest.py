@@ -7,7 +7,7 @@ PATH = lambda p: os.path.abspath(
 )
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-LSAT_SCREENSHOT_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ),'log','sc.png'))
+
     
     
 # APPIUM_LOCAL_HOST_URL = 'http://localhost:4723/wd/hub'
