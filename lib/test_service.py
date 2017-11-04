@@ -1,9 +1,12 @@
-from appium import webdriver
 from datetime import datetime
+import inspect
+
+from appium import webdriver
 import pytest, csv, sys, os, time
 
-from lib import logger
 import conftest
+from lib import logger
+
 
 #===========================================================================
 # The class contains basic test functions and macros. 
@@ -14,11 +17,12 @@ class TestService:
     # General parameters
     CURRENT_PLATFORM                = None
     # Logging parameters
-#     LOG_LEVEL                       = "DEBUG" #TODO Enum
-    LOG_LEVEL                       = "INFO" #TODO Enum
+    LOG_LEVEL                       = "DEBUG" #TODO Enum
+#     LOG_LEVEL                       = "INFO" #TODO Enum
     GLOBAL_LOG_FILE_PATH            = None
     TEST_LOG_FILE_FOLDER_PATH       = None
     TEST_LOG_FILE_PATH              = None
+    SCREENSHOT_PATH                 = None
 
     CURRENT_TEST_START_TIME         = None
     CURRENT_TEST_END_TIME           = None
@@ -44,7 +48,7 @@ class TestService:
             # Initialize log, create log folder if needed
             logger.initializeLog(testNum)
             # Capture test start time
-            self.logTestStartTime()
+            self.logTestStartTime(testNum)
             # Return WebDriver (android/ios)
             driver = self.getDriver(platform)
             # Create log
@@ -58,23 +62,41 @@ class TestService:
             logger.infoLog('Test setup failed - Failed to get Driver')
             raise
     def basicTearDown(self, test, driver=None):
-        logger.infoLog('Going to TearDown')
-        if driver != None:
-            # Take last screenshot before quitting
-            driver.save_screenshot(conftest.LSAT_SCREENSHOT_PATH)    
-            driver.quit()
-            #write to log we finished the test
-        self.logTestEndTime()
-
+        try:
+            logger.infoLog('Going to TearDown')
+            if driver != None:
+                # Take last screenshot before quitting
+                logger.takeScreeshotGeneric(driver, 'LAST_SCREENSHOT')
+#                 driver.save_screenshot(TestService.SCREENSHOT_PATH)    
+                driver.quit()
+                #write to log we finished the test
+            self.logTestEndTime()
+        except Exception as exp:
+            test.status = self.handleException(self, exp)                   
+        if (self.isAutomationEnv() == True):
+            pass
+#             practiTest.setPractitestInstanceTestResults(test.status,str(test.testNum))
         if test.status == "Pass":
             logger.infoLog('TEST PASSED')
         else:
             logger.infoLog('TEST FAILED')
-            assert(False)        
-    
+            assert(False)
+            
+    def isAutomationEnv(self):
+        env = ""
+        for arg in sys.argv[1:]:
+            if ("--env" in arg):
+                env = arg[6:]
+                break
+        if (env == "Auto"):
+            return True
+        else:
+            return False
+                
     #update the supported platforms for each test case by reading the supported browsers we pass to the fixture from platform_matrix.csv. 1 - support , 0 - not support.  
     def updatePlatforms(self,test_num):
         
+        # If we running from pracitest, then we should use testSetAuto.csv wich contains the tests to run
         env = ""
         for arg in sys.argv[1:]:
             if "--env" in arg:
@@ -128,10 +150,10 @@ class TestService:
         return test.status    
     
     # Get the test start time and print to log
-    def logTestStartTime(self):
+    def logTestStartTime(self, testNum):
         self.CURRENT_TEST_START_TIME = time.time()
         logger.infoLog('************************************************************************************************************************')
-        logger.infoLog("Test Started At: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(self.CURRENT_TEST_START_TIME)))
+        logger.infoLog("Test " + testNum + " Started At: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(self.CURRENT_TEST_START_TIME)))
             
     
     # Get the test end time and print to log        
@@ -140,9 +162,4 @@ class TestService:
         logger.infoLog("Test Ended At: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(self.CURRENT_TEST_END_TIME)))
         timeDiff = self.CURRENT_TEST_END_TIME - self.CURRENT_TEST_START_TIME 
         timeDiff = datetime.utcfromtimestamp(timeDiff).strftime('%H:%M:%S.%f')[:-3]
-        logger.infoLog("Total Test Run: " + timeDiff)         
-        
-        
-        
-        
-             
+        logger.infoLog("Total Test Run: " + timeDiff)

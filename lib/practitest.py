@@ -23,8 +23,12 @@ class PractiTest:
             dctSets = json.loads(r.text)
             if (len(dctSets["data"]) > 0):
                 for testInstance in dctSets["data"]:
-                    sessionInstancesDct[testInstance["attributes"]["test-display-id"]] = testInstance["attributes"]["display-id"]
-                    logger.infoGlobalLog("Found test with id: " + str(testInstance["attributes"]["test-display-id"]))                          
+                    try:
+#                         sessionInstancesDct[testInstance["attributes"]["test-display-id"]] = testInstance["attributes"]["display-id"] #testInstance["attributes"]["custom-fields"]['---f-30336']
+                        sessionInstancesDct[testInstance["attributes"]["custom-fields"]['---f-30336']] = testInstance["attributes"]["display-id"]
+                        logger.infoGlobalLog("Found test with id: " + str(testInstance["attributes"]["test-display-id"]))
+                    except Exception:
+                        pass                        
             else:
                 logger.infoGlobalLog("No instances in set. " + r.text)        
         else:

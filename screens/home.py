@@ -38,7 +38,7 @@ class Home(Base):
             logger.debugLog('Function: "' + sys._getframe().f_code.co_name + '" - Clicked on user image view button')
             return True
         else:
-            logger.warningLog('Function: "' + sys._getframe().f_code.co_name + '" - Failed to click on user image view button')
+            logger.debugLog('Function: "' + sys._getframe().f_code.co_name + '" - Failed to click on user image view button')
             return False        
         
         

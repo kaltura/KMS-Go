@@ -1,7 +1,12 @@
 import datetime
-import logging, sys, time, os
 import enum
+from inspect import stack, getouterframes, currentframe
+import inspect
+import logging, sys, time, os
+from symbol import except_clause
+
 from lib.test_service import TestService
+from screens import login
 
 
 # TODO 
@@ -106,16 +111,16 @@ def log_exception(inst):
     
     debugLog("Exception at file     : " + traceback_details["filename"])
     debugLog("Exception at line     : " + str(traceback_details["lineno"]))
-    debugLog("Exception at function : " + traceback_details["name"])
-    debugLog("Exception type        : " + traceback_details["type"])
+    #debugLog("Exception at function : " + traceback_details["name"])
+    #debugLog("Exception type        : " + traceback_details["type"])
     debugLog("Value                 : " + str(exc_value))
     
 # Initialize log - Create global log file in not exists, and creates log in current test folder
 def initializeLog(testNum=None):
     if testNum != None:
-        # Get Test folder path
+        # Set Test folder path
         TestService.TEST_LOG_FILE_FOLDER_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..',TestService.CURRENT_PLATFORM, testNum))
-        # Get Test log path
+        # Set Test log path
         TestService.TEST_LOG_FILE_PATH = os.path.abspath(os.path.join(TestService.TEST_LOG_FILE_FOLDER_PATH, testNum + '.log'))
         # Create test log folder if not exists
         if (os.path.isdir(TestService.TEST_LOG_FILE_FOLDER_PATH) == False):
@@ -123,7 +128,59 @@ def initializeLog(testNum=None):
     # Get Global log path
     TestService.GLOBAL_LOG_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..','Log_Global.log'))
    
-
+# Prints to log that test setup ended, and going to execute the test flow
 def readyForTestLog(testNum, platformName, platformVersion, deviceModel, deviceScreenSize):
     infoTestLog('Test Setup Ready: Test ' + testNum + ' started on ' + platformName + ', Version ' + platformVersion + ', Model ' + deviceModel + ', Resolution ' +deviceScreenSize)
+
+# Create a screeshot with a given name it the test log folder
+def takeScreeshotGeneric(driver, scName):
+    # Set Test screenshot path
+    scPath = os.path.abspath(os.path.join(TestService.TEST_LOG_FILE_FOLDER_PATH, scName + '.png'))    
+    try:
+        driver.save_screenshot(scPath)  
+    except:
+        infoLog("Failed to take a screenshot, bad driver")
+        
+def raiseException(driver, msg):
+    infoLog(msg)
+    try:
+        takeScreeshotGeneric(driver, inspect.stack()[1][3])
+    except:
+        infoLog("Failed to take a screenshot, bad driver")        
+    raise Exception(msg)
+
+# Return the caller class and function name
+def generateErrorMsg(msg):
+    return 'Function: "' + caller_name(3).split('.')[2] + '.' + caller_name(3).split('.')[3] + '.' + inspect.stack()[1][3] + ' - ' + msg
+
+def caller_name(skip=2):
+    """Get a name of a caller in the format module.class.method
     
+       `skip` specifies how many levels of stack to skip while getting caller
+       name. skip=1 means "who calls me", skip=2 "who calls my caller" etc.
+       
+       An empty string is returned if skipped levels exceed stack height
+    """
+    stack = inspect.stack()
+    start = 0 + skip
+    if len(stack) < start + 1:
+        return ''
+    parentframe = stack[start][0]    
+    
+    name = []
+    module = inspect.getmodule(parentframe)
+    # `modname` can be None when frame is executed directly in console
+    # TODO(techtonik): consider using __main__
+    if module:
+        name.append(module.__name__)
+    # detect classname
+    if 'self' in parentframe.f_locals:
+        # I don't know any way to detect call from the object method
+        # XXX: there seems to be no way to detect static method call - it will
+        #      be just a function call
+        name.append(parentframe.f_locals['self'].__class__.__name__)
+    codename = parentframe.f_code.co_name
+    if codename != '<module>':  # top level usually
+        name.append( codename ) # function or a method
+    del parentframe
+    return ".".join(name)
