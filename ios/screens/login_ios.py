@@ -1,7 +1,4 @@
-from appium import webdriver
 from ios.screens.base_ios import BaseIos
-
-
 
 class LoginIos(BaseIos):
     login_button = ('id', 'com.kms.kaltura.kmsapplication:id/login_button')

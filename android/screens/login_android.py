@@ -1,4 +1,3 @@
-from appium import webdriver
 from android.screens.base_android import BaseAndroid
 
 

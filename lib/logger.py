@@ -1,12 +1,6 @@
-import datetime
-import enum
-from inspect import stack, getouterframes, currentframe
-import inspect
-import logging, sys, time, os
-from symbol import except_clause
+import inspect, logging, sys, time, os
 
-from lib.test_service import TestService
-from screens import login
+from lib import localConfig
 
 
 # TODO 
@@ -38,49 +32,49 @@ def infoLog(content):
     infoGlobalLog(content)
     
 def errorLog(content):
-    if TestService.LOG_LEVEL == ERROR:
+    if localConfig.LOG_LEVEL == ERROR:
         infoTestLog(content)
         infoGlobalLog(content)
     
 def debugLog(content):
-    if TestService.LOG_LEVEL == DEBUG:
+    if localConfig.LOG_LEVEL == DEBUG:
         infoTestLog(content)
         infoGlobalLog(content)            
     
 def infoTestLog(content):
-    loggerTest = setup_logger('test_log', TestService.TEST_LOG_FILE_PATH)
+    loggerTest = setup_logger('test_log', localConfig.TEST_LOG_FILE_PATH)
     loggerTest.info(content)
     # Remove handler, if not remove, it will print multiple lines
     while loggerTest.handlers:
         loggerTest.handlers.pop()
 
 def errorTestLog(content):
-    loggerTest = setup_logger('test_log', TestService.TEST_LOG_FILE_PATH)
+    loggerTest = setup_logger('test_log', localConfig.TEST_LOG_FILE_PATH)
     loggerTest.info('ERROR: ' + content)
     while loggerTest.handlers:
         loggerTest.handlers.pop()
      
 def debugTestLog(content):
-    loggerTest = setup_logger('test_log', TestService.TEST_LOG_FILE_PATH)
+    loggerTest = setup_logger('test_log', localConfig.TEST_LOG_FILE_PATH)
     loggerTest.info('DEBUG: ' + content)
     while loggerTest.handlers:
         loggerTest.handlers.pop()
 
 # Write log to global, all test combined log    
 def infoGlobalLog(content):
-    loggerGlobal = setup_logger('global_log', TestService.GLOBAL_LOG_FILE_PATH)
+    loggerGlobal = setup_logger('global_log', localConfig.GLOBAL_LOG_FILE_PATH)
     loggerGlobal.info(content)
     while loggerGlobal.handlers:
         loggerGlobal.handlers.pop()
 
 def errorGlobalLog(content):
-    loggerGlobal = setup_logger('global_log', TestService.GLOBAL_LOG_FILE_PATH)
+    loggerGlobal = setup_logger('global_log', localConfig.GLOBAL_LOG_FILE_PATH)
     loggerGlobal.info('ERROR: ' + content)
     while loggerGlobal.handlers:
         loggerGlobal.handlers.pop()
      
 def debugGlobalLog(content):
-    loggerGlobal = setup_logger('global_log', TestService.GLOBAL_LOG_FILE_PATH)
+    loggerGlobal = setup_logger('global_log', localConfig.GLOBAL_LOG_FILE_PATH)
     loggerGlobal.info('DEBUG: ' + content)
     while loggerGlobal.handlers:
         loggerGlobal.handlers.pop()   
@@ -119,14 +113,14 @@ def log_exception(inst):
 def initializeLog(testNum=None):
     if testNum != None:
         # Set Test folder path
-        TestService.TEST_LOG_FILE_FOLDER_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..',TestService.CURRENT_PLATFORM, testNum))
+        localConfig.TEST_LOG_FILE_FOLDER_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..',localConfig.CURRENT_PLATFORM, testNum))
         # Set Test log path
-        TestService.TEST_LOG_FILE_PATH = os.path.abspath(os.path.join(TestService.TEST_LOG_FILE_FOLDER_PATH, testNum + '.log'))
+        localConfig.TEST_LOG_FILE_PATH = os.path.abspath(os.path.join(localConfig.TEST_LOG_FILE_FOLDER_PATH, testNum + '.log'))
         # Create test log folder if not exists
-        if (os.path.isdir(TestService.TEST_LOG_FILE_FOLDER_PATH) == False):
-            os.makedirs(TestService.TEST_LOG_FILE_FOLDER_PATH, exist_ok=True)        
+        if (os.path.isdir(localConfig.TEST_LOG_FILE_FOLDER_PATH) == False):
+            os.makedirs(localConfig.TEST_LOG_FILE_FOLDER_PATH, exist_ok=True)        
     # Get Global log path
-    TestService.GLOBAL_LOG_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..','Log_Global.log'))
+    localConfig.GLOBAL_LOG_FILE_PATH = os.path.abspath(os.path.join(os.path.dirname( __file__ ),'..','Log_Global.log'))
    
 # Prints to log that test setup ended, and going to execute the test flow
 def readyForTestLog(testNum, platformName, platformVersion, deviceModel, deviceScreenSize):
@@ -135,12 +129,13 @@ def readyForTestLog(testNum, platformName, platformVersion, deviceModel, deviceS
 # Create a screeshot with a given name it the test log folder
 def takeScreeshotGeneric(driver, scName):
     # Set Test screenshot path
-    scPath = os.path.abspath(os.path.join(TestService.TEST_LOG_FILE_FOLDER_PATH, scName + '.png'))    
+    scPath = os.path.abspath(os.path.join(localConfig.TEST_LOG_FILE_FOLDER_PATH, scName + '.png'))    
     try:
         driver.save_screenshot(scPath)  
     except:
         infoLog("Failed to take a screenshot, bad driver")
-        
+
+# Print to log the message and raises an Exception        
 def raiseException(driver, msg):
     infoLog(msg)
     try:
@@ -153,6 +148,7 @@ def raiseException(driver, msg):
 def generateErrorMsg(msg):
     return 'Function: "' + caller_name(3).split('.')[2] + '.' + caller_name(3).split('.')[3] + '.' + inspect.stack()[1][3] + ' - ' + msg
 
+# Returns the caller class and methods when `skip` specifies how many levels of stack to skip while getting caller name
 def caller_name(skip=2):
     """Get a name of a caller in the format module.class.method
     

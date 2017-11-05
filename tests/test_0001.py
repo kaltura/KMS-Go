@@ -1,5 +1,6 @@
 import pytest
-from lib import logger
+
+from lib import logger, localConfig
 from lib.test_service import TestService
 from screens.login import Login
 
@@ -23,15 +24,15 @@ class Test:
     def setup(self, request):
         global driver, practitTestId
         # Get platform from the platform list (testSet.csv)
-        TestService.CURRENT_PLATFORM = request.param[0]
+        localConfig.CURRENT_PLATFORM = request.param[0]
         self.practitTestId = request.param[1]
-        driver = self.testService.basicSetup(TestService.CURRENT_PLATFORM, self.testNum)
+        driver = self.testService.basicSetup(localConfig.CURRENT_PLATFORM, self.testNum)
 
     # Test Flow        
     def test_0001(self, setup):
         try:
             # Tested Screens
-            login = Login(TestService.CURRENT_PLATFORM , driver)
+            login = Login(localConfig.CURRENT_PLATFORM , driver)
             
             # Steps:
             logger.infoLog('STEP1: Goint to login')

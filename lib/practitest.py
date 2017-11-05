@@ -1,9 +1,6 @@
-import csv
-import json
-import os
+import requests, csv, json, os 
 
-import requests
-from lib import logger
+from lib import logger, localConfig
 
 
 # PractiTest parameters
@@ -14,12 +11,6 @@ PRACTITEST_DEVELOPER_EMAIL             = "oleg.sigalov@kaltura.com"
 
 # The class contains functions that manage PractiTest integration with automation framework 
 class PractiTest:
-    TEST_LOG_FILE_FOLDER_PATH = None
-    
-    def updateTestLogFileFolder(self, value):
-        self.TEST_LOG_FILE_FOLDER_PATH = value
-        
-        
     # Function that returns all instances of a specific session 
     def getPractiTestSessionInstances(self, prSessionID):
         
@@ -143,7 +134,7 @@ class PractiTest:
                  ("exit_code",  exit_code), 
                  ("instance_display_id", testSet + ":" + testInstance)
         ]         
-        fileList = self.getFilesInTestLogFolder(self.TEST_LOG_FILE_FOLDER_PATH)       
+        fileList = self.getFilesInTestLogFolder(localConfig.TEST_LOG_FILE_FOLDER_PATH)       
          
         r = requests.post(practiTestUpdateTestInstanceResultsURL,data = data ,files=fileList)
          
