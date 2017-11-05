@@ -1,8 +1,8 @@
-from datetime import datetime
-
-from appium import webdriver
 import pytest, csv, sys, os, time
-from lib import logger
+from datetime import datetime
+from appium import webdriver
+
+from lib import logger, localConfig
 from lib.practitest import PractiTest
 
 
@@ -13,30 +13,7 @@ from lib.practitest import PractiTest
 # Check supported platform to run on, update final results matrix.
 #===========================================================================
 class TestService:
-    # General parameters
-    CURRENT_PLATFORM                = None
-    # Logging parameters
-    LOG_LEVEL                       = "DEBUG" #TODO Enum
-#     LOG_LEVEL                       = "INFO" #TODO Enum
-    GLOBAL_LOG_FILE_PATH            = None
-    TEST_LOG_FILE_FOLDER_PATH       = None
-    TEST_LOG_FILE_PATH              = None
-    SCREENSHOT_PATH                 = None
-
-    CURRENT_TEST_START_TIME         = None
-    CURRENT_TEST_END_TIME           = None
-    LAST_TEST_DURATION              = None
-    
-    # Appium parameters
-    APPIUM_LOCAL_HOST_URL           = 'http://localhost:4723/wd/hub'
-    
-    # Android parameters
-    PLATFORM_VERSION                = '6.0.1'
-    
-    # IOS parameters
-
-    
-    # Test Module
+    # Test Modules
     practiTest = PractiTest()
     
     ## MTHODS
@@ -44,7 +21,6 @@ class TestService:
         try:
             # Initialize log, create log folder if needed
             logger.initializeLog(testNum)
-            self.practiTest.updateTestLogFileFolder(TestService.TEST_LOG_FILE_FOLDER_PATH)
             # Capture test start time
             self.logTestStartTime(testNum)
             # Return WebDriver (android/ios)
@@ -132,12 +108,12 @@ class TestService:
             'appPackage': 'com.kms.kaltura.kmsapplication',
             'appActivity': '.activities.LoadingActivity',
             'platformName': 'android',
-            'platformVersion': self.PLATFORM_VERSION,
+            'platformVersion': localConfig.PLATFORM_VERSION,
             'deviceName': 'Galaxy S6',
             'noReset': 'true'
     #         'app': PATH('C:\\work\\Mobile\\KmsGo\\APK\\app.apk')
         }
-        return webdriver.Remote(self.APPIUM_LOCAL_HOST_URL, capabilities)
+        return webdriver.Remote(localConfig.APPIUM_LOCAL_HOST_URL, capabilities)
     
     #TODO
     def driver_setup_ios(self):
@@ -151,15 +127,15 @@ class TestService:
     
     # Get the test start time and print to log
     def logTestStartTime(self, testNum):
-        self.CURRENT_TEST_START_TIME = time.time()
+        localConfig.CURRENT_TEST_START_TIME = time.time()
         logger.infoLog('************************************************************************************************************************')
-        logger.infoLog("Test " + testNum + " Started At: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(self.CURRENT_TEST_START_TIME)))
+        logger.infoLog("Test " + testNum + " Started At: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(localConfig.CURRENT_TEST_START_TIME)))
             
     
     # Get the test end time and print to log        
     def logTestEndTime(self):
-        self.CURRENT_TEST_END_TIME = time.time()
-        logger.infoLog("Test Ended At: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(self.CURRENT_TEST_END_TIME)))
-        timeDiff = self.CURRENT_TEST_END_TIME - self.CURRENT_TEST_START_TIME 
+        localConfig.CURRENT_TEST_END_TIME = time.time()
+        logger.infoLog("Test Ended At: " + time.strftime("%d-%m-%Y %H:%M:%S", time.localtime(localConfig.CURRENT_TEST_END_TIME)))
+        timeDiff = localConfig.CURRENT_TEST_END_TIME - localConfig.CURRENT_TEST_START_TIME 
         timeDiff = datetime.utcfromtimestamp(timeDiff).strftime('%H:%M:%S.%f')[:-3]
         logger.infoLog("Total Test Run: " + timeDiff)
