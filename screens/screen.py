@@ -97,12 +97,11 @@ class Screen:
 
     # element visible
     def is_visible(self, locator):
-        self.get_element(locator).is_displayed()
-#         try:
-#             self.get_element(locator).is_displayed()
-#             return True
-#         except NoSuchElementException:
-#             return False
+        try:
+            self.get_element(locator).is_displayed()
+            return True
+        except NoSuchElementException:
+            return False
         
     # element present
     def is_present(self, locator):

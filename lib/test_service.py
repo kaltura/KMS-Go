@@ -13,10 +13,13 @@ from lib.practitest import PractiTest
 # Check supported platform to run on, update final results matrix.
 #===========================================================================
 class TestService:
+    ####################################################################
+    ############################# Modules ##############################
     # Test Modules
     practiTest = PractiTest()
     
-    ## MTHODS
+    ####################################################################
+    ############################# Methods ##############################
     def basicSetup(self, platform, testNum):
         try:
             # Initialize log, create log folder if needed
@@ -48,7 +51,6 @@ class TestService:
             test.status = self.handleException(self, exp) 
          
         # THE NEXT LINE IS FOR DEBUG 
-#         self.practiTest.setPractitestInstanceTestResults(test.status, str(test.testNum))                     
         if (self.isAutomationEnv() == True):
             self.practiTest.setPractitestInstanceTestResults(test.status, str(test.testNum))
         
@@ -114,6 +116,22 @@ class TestService:
     #         'app': PATH('C:\\work\\Mobile\\KmsGo\\APK\\app.apk')
         }
         return webdriver.Remote(localConfig.APPIUM_LOCAL_HOST_URL, capabilities)
+        
+        ## https://saucelabs.com/beta/dashboard/tests  
+#     def driver_setup_android(self):
+#         capabilities = {
+#             'testobject_api_key': '614DAC82000D46248B48E4DB355A0AB9',
+#             'appPackage': 'com.kms.kaltura.kmsapplication',
+#             'appActivity': '.activities.LoadingActivity',
+#             'platformName': 'Android',
+# #             'platformVersion': '7',
+#             'deviceName': 'LG_Nexus_5X_free',
+#             'noReset': 'true'
+#         }
+# 
+#         return webdriver.Remote('https://eu1.appium.testobject.com/wd/hub', capabilities)
+    
+    
     
     #TODO
     def driver_setup_ios(self):
