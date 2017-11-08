@@ -2,7 +2,7 @@ import pytest
 
 from lib import logger, localConfig
 from lib.test_service import TestService
-from screens.login import Login
+from screens.pre_login import PreLogin
 
 
 class Test:
@@ -32,11 +32,11 @@ class Test:
     def test_0001(self, setup):
         try:
             # Tested Screens
-            login = Login(localConfig.CURRENT_PLATFORM , driver)
+            preLogin = PreLogin(localConfig.CURRENT_PLATFORM , driver)
             
             # Steps:
             logger.infoLog('STEP1: Goint to login')
-            login.login_with_credentials('admin', '123456')
+            preLogin.loginGeneric('admin', '123456')
             self.status = "Pass"
         # If an exception happened we need to handle it and fail the test       
         except Exception as exp:

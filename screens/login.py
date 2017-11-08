@@ -26,7 +26,7 @@ class Login(Base):
             self.login = LoginIos(driver)
         else:
             platform = None
-            #TODO PRINT ERROR
+            logger.raiseException(driver, 'Unknown platform: "' + platform + '"')
 
         
         # For internal use (Reusable flow methods in this class)
@@ -86,15 +86,20 @@ class Login(Base):
     #############################################################################
     ############################# Reusable flow methods #########################    
     def login_with_credentials(self, username, password):
-        try: 
             self.home.click_user_image_view()
             self.click_login_button()
+            self.enter_credentials_and_sing_in(username, password)
+            
+    def enter_credentials_and_sing_in(self, username, password):
+        try: 
             self.type_login_username(username)
             self.type_login_password(password)
             self.general.hide_keyboard()
             self.click_signin_button()
-            self.wait_for_logged_in_background(15)
-            logger.infoLog("Logged in successfully with '" + "'" + username + "'@'" + password + "'")
+            if self.wait_visible(self.home.home.user_image_view, 15) != None:
+                logger.infoLog("Logged in successfully with '" + username + "'@'" + password + "'")
+                return True
         except Exception:
-            logger.raiseException(self.driver, "FAILED to login with '" + username + "' @ '" + password + "'")
+            pass
+        logger.raiseException(self.driver, "FAILED to login with '" + username + "' @ '" + password + "'")       
         
