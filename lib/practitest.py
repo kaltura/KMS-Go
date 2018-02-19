@@ -6,7 +6,7 @@ from lib import logger, localConfig
 # PractiTest parameters
 PRACTITEST_PROJECT_ID                  = 1328
 PRACTITEST_AUTOMATED_SESSION_FILTER_ID = 259788
-PRACTITEST_API_TOKEN                   = "deee12e1d8746561e1815d0430814c82c9dbb57d"
+PRACTITEST_API_TOKEN                   = None
 PRACTITEST_DEVELOPER_EMAIL             = "oleg.sigalov@kaltura.com"
 
 # The class contains functions that manage PractiTest integration with automation framework 
